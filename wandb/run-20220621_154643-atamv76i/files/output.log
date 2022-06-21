@@ -1,0 +1,75 @@
+
+loading dataset to memory
+
+
+100%|█████████████████████████████████████████████████████████████████████| 3000/3000 [00:04<00:00, 699.99it/s]
+/home/alfin/Documents/deep_learning/monocular_fish_3d_box/lib/Dataset_utils.py:36: FutureWarning: The frame.append method is deprecated and will be removed from pandas in a future version. Use pandas.concat instead.
+  df = df.append(d,ignore_index=True)
+/home/alfin/.conda/envs/CenterNet/lib/python3.8/site-packages/torch/nn/modules/loss.py:907: UserWarning: Using a target size (torch.Size([64])) that is different to the input size (torch.Size([64, 1])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.smooth_l1_loss(input, target, reduction=self.reduction, beta=self.beta)
+Epoch 0 | 0/67: Loss 0.49112093448638916, Dim Loss 0.016754701733589172, Orient Loss 0.09801805019378662, Depth Loss 0.3830500543117523
+Epoch 0 | 60/67: Loss -0.614181637763977, Dim Loss 0.012668064795434475, Orient Loss -0.6681415438652039, Depth Loss 0.04635907709598541
+====================
+Done with epoch 0!
+Saving weights as weights/epoch_0.pkl ...
+====================
+/home/alfin/.conda/envs/CenterNet/lib/python3.8/site-packages/torch/nn/modules/loss.py:907: UserWarning: Using a target size (torch.Size([28])) that is different to the input size (torch.Size([28, 1])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.smooth_l1_loss(input, target, reduction=self.reduction, beta=self.beta)
+Epoch 1 | 0/67: Loss -0.780923068523407, Dim Loss 0.012755024246871471, Orient Loss -0.8359459042549133, Depth Loss 0.04736984521150589
+Epoch 1 | 60/67: Loss -0.8864871263504028, Dim Loss 0.010963037610054016, Orient Loss -0.9409207701683044, Depth Loss 0.04785580188035965
+====================
+Done with epoch 1!
+Saving weights as weights/epoch_1.pkl ...
+====================
+Epoch 2 | 0/67: Loss -0.6931087970733643, Dim Loss 0.010152362287044525, Orient Loss -0.7440362572669983, Depth Loss 0.044836048036813736
+Epoch 2 | 60/67: Loss -1.1175216436386108, Dim Loss 0.009705200791358948, Orient Loss -1.165886402130127, Depth Loss 0.042541615664958954
+====================
+Done with epoch 2!
+Saving weights as weights/epoch_2.pkl ...
+====================
+Epoch 3 | 0/67: Loss -1.1735934019088745, Dim Loss 0.010377597063779831, Orient Loss -1.2305772304534912, Depth Loss 0.05075724422931671
+Epoch 3 | 60/67: Loss -1.357290267944336, Dim Loss 0.00950307585299015, Orient Loss -1.3910702466964722, Depth Loss 0.028078041970729828
+====================
+Done with epoch 3!
+Saving weights as weights/epoch_3.pkl ...
+====================
+Epoch 4 | 0/67: Loss -1.5339045524597168, Dim Loss 0.008963636122643948, Orient Loss -1.5804884433746338, Depth Loss 0.04120572656393051
+Epoch 4 | 60/67: Loss -1.6286369562149048, Dim Loss 0.009064380079507828, Orient Loss -1.6719082593917847, Depth Loss 0.037832602858543396
+====================
+Done with epoch 4!
+Saving weights as weights/epoch_4.pkl ...
+====================
+Epoch 5 | 0/67: Loss -1.6820217370986938, Dim Loss 0.008181177079677582, Orient Loss -1.7277095317840576, Depth Loss 0.040779080241918564
+Epoch 5 | 60/67: Loss -1.8187963962554932, Dim Loss 0.008464801125228405, Orient Loss -1.865577220916748, Depth Loss 0.04170190542936325
+====================
+Done with epoch 5!
+Saving weights as weights/epoch_5.pkl ...
+====================
+Epoch 6 | 0/67: Loss -1.9098258018493652, Dim Loss 0.007532459683716297, Orient Loss -1.9439722299575806, Depth Loss 0.029626991599798203
+Epoch 6 | 60/67: Loss -1.891845941543579, Dim Loss 0.0057578617706894875, Orient Loss -1.9270299673080444, Depth Loss 0.03172929957509041
+====================
+Done with epoch 6!
+Saving weights as weights/epoch_6.pkl ...
+====================
+Epoch 7 | 0/67: Loss -1.9191957712173462, Dim Loss 0.006634879857301712, Orient Loss -1.9531662464141846, Depth Loss 0.029989562928676605
+Epoch 7 | 60/67: Loss -1.941021203994751, Dim Loss 0.0076741925440728664, Orient Loss -1.9933332204818726, Depth Loss 0.04770754277706146
+====================
+Done with epoch 7!
+Saving weights as weights/epoch_7.pkl ...
+====================
+Epoch 8 | 0/67: Loss -1.935469388961792, Dim Loss 0.0071221813559532166, Orient Loss -1.9733426570892334, Depth Loss 0.03359994292259216
+Epoch 8 | 60/67: Loss -1.9794367551803589, Dim Loss 0.007389150559902191, Orient Loss -2.014195203781128, Depth Loss 0.03032499924302101
+====================
+Done with epoch 8!
+Saving weights as weights/epoch_8.pkl ...
+====================
+Epoch 9 | 0/67: Loss -1.9629850387573242, Dim Loss 0.007495115511119366, Orient Loss -2.0040652751922607, Depth Loss 0.036583155393600464
+Epoch 9 | 60/67: Loss -1.9525425434112549, Dim Loss 0.0069193607196211815, Orient Loss -1.9908474683761597, Depth Loss 0.0341532900929451
+Traceback (most recent call last):
+  File "train.py", line 100, in <module>
+    loss.backward()
+  File "/home/alfin/.conda/envs/CenterNet/lib/python3.8/site-packages/torch/tensor.py", line 245, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/home/alfin/.conda/envs/CenterNet/lib/python3.8/site-packages/torch/autograd/__init__.py", line 145, in backward
+    Variable._execution_engine.run_backward(
+KeyboardInterrupt

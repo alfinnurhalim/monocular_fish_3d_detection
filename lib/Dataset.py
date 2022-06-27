@@ -10,14 +10,15 @@ import pandas as pd
 from lib.Dataset_utils import compute_hwl_mean,crop_img
 
 class Dataset(Dataset):
-	def __init__(self,dataloader,bin_num=2, overlap=0.0001):
+	def __init__(self,dataloader,bin_num=2, overlap=np.pi/32,mode='training'):
 
+		self.mode = mode
 		self.dataloader = dataloader
 		self.id_mapping = self._get_id_mapping(dataloader)
 
 		# creating bin
 		interval = np.pi*2/bin_num
-		self.bins = [Bin(angle_min=i*interval,angle_max=(i+1)*interval) for i in range(bin_num)]
+		self.bins = [Bin(angle_min=i*interval,angle_max=(i+1)*interval,overlap=overlap) for i in range(bin_num)]
 
 		# compute dimension mean
 		self.dim_mean = compute_hwl_mean(os.path.join(dataloader.base_dir,'label_2'))
@@ -42,7 +43,7 @@ class Dataset(Dataset):
 		box_2d = (obj.xmin,obj.ymin,obj.xmax,obj.ymax)
 
 		full_img = cv2.imread(file.img_path)
-		cropped_img = crop_img(full_img.copy(),box_2d)
+		cropped_img = crop_img(full_img.copy(),box_2d,self.mode)
 
 		orientX,confX = self.get_orientation(obj.alphax)
 		orientY,confY = self.get_orientation(obj.alphay)
@@ -50,7 +51,7 @@ class Dataset(Dataset):
 		label = dict()
 		label['box_2d'] = box_2d
 
-		label['dimension'] = np.array([obj.h,obj.w,obj.l]) - self.dim_mean
+		label['dimension'] = np.array([obj.h,obj.w,obj.l])
 
 		label['alphax'] = obj.alphax
 		label['alphay'] = obj.alphay

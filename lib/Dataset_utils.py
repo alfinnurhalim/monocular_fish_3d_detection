@@ -6,15 +6,46 @@ from matplotlib import pyplot as plt
 from torchvision import transforms
 from matplotlib.pyplot import figure
 from sklearn.metrics import average_precision_score,mean_absolute_error,mean_squared_error 
+import imgaug.augmenters as iaa
 
-def crop_img(img,box_2d):
+def compose_transform(img,mode):
+
+	transforms = list()
+	h,w,_ = img.shape
+
+	if h>w:
+		transforms.append(iaa.Resize({"height": 224, "width": "keep-aspect-ratio"}))
+	else:
+		transforms.append(iaa.Resize({"height": "keep-aspect-ratio", "width": 255}))
+
+	transforms.append(iaa.PadToFixedSize(width=224, height=224))
+
+	# if mode == 'training':
+		# transforms.append(iaa.SaltAndPepper(0.1))
+		# transforms.append(iaa.GammaContrast((0.5, 2.0)))
+		# transforms.append(iaa.MultiplyAndAddToBrightness(mul=(0.5, 1.0), add=(-5, 5)))
+		# transforms.append(iaa.AddToHueAndSaturation((-25, 25), per_channel=True))
+		# transforms.append(iaa.BlendAlphaCheckerboard(nb_rows=2, nb_cols=(1, 4),foreground=iaa.AddToHue((-100, 100))))
+		# transforms.append(iaa.Cutout(nb_iterations=2))
+		# transforms.append(iaa.CoarseDropout(0.02, size_percent=0.10, per_channel=0.5))
+		# transforms.append(iaa.Jigsaw(nb_rows=10, nb_cols=10))
+
+	return transforms
+
+def crop_img(img,box_2d,mode = 'training'):
 	(x0,y0,x1,y1) = box_2d
 	cropped = img.copy()
 
 	cropped = cropped[y0:y0+(abs(y1-y0)),x0:x0+(abs(x1-x0))]
-	cropped = cropped/255
 
-	cropped = cv2.resize(src = cropped, dsize=(224, 224), interpolation=cv2.INTER_CUBIC)
+	# do data augemntation 
+	# if mode == 'training':
+	seq = iaa.Sequential(compose_transform(cropped,mode))
+	cropped = seq(image=cropped.copy())
+	cropped = cv2.resize(cropped,(224,224))
+
+	cropped = cropped/255
+	
 	process = transforms.Compose ([
             transforms.ToTensor()
         ])

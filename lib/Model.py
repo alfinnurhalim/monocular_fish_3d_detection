@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision.models import vgg,resnet50
 
-def OrientationLoss(orient_batch, orientGT_batch, confGT_batch):
+def OrientationLoss(orient_batch, orientGT_batch, confGT_batch,bins):
 
     batch_size = orient_batch.size()[0]
     indexes = torch.max(confGT_batch, dim=1)[1]
@@ -17,7 +17,23 @@ def OrientationLoss(orient_batch, orientGT_batch, confGT_batch):
     theta_diff = torch.atan2(orientGT_batch[:,1], orientGT_batch[:,0])
     estimated_theta_diff = torch.atan2(orient_batch[:,1], orient_batch[:,0])
 
-    return -1 * torch.cos(theta_diff - estimated_theta_diff).mean()
+    error = (theta_diff - estimated_theta_diff)
+    return -1 * torch.cos(error).mean()
+
+# def OrientationLoss(orient_batch, orientGT_batch, confGT_batch,bins):
+
+#     batch_size = orient_batch.size()[0]
+#     indexes = torch.max(confGT_batch, dim=1)[1]
+
+#     # extract just the important bin
+#     orientGT_batch = orientGT_batch[torch.arange(batch_size), indexes]
+#     orient_batch = orient_batch[torch.arange(batch_size), indexes]
+
+#     theta_diff = torch.atan2(orientGT_batch[:,1], orientGT_batch[:,0])
+#     estimated_theta_diff = torch.atan2(orient_batch[:,1], orient_batch[:,0])
+
+#     error = (theta_diff - estimated_theta_diff)
+#     return (2 - (2/batch_size * torch.cos(error).sum()))/bins
 
 class Model(nn.Module):
     def __init__(self, bins=2,backbone = 'resnet50'):

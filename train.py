@@ -3,6 +3,7 @@ import os
 import cv2
 import torch
 import wandb
+import imgaug
 
 import numpy as np
 import pandas as pd
@@ -23,16 +24,19 @@ from lib.KITTIDataloader import KITTIDataloader
 from lib.Dataset import Dataset,Bin
 from lib.Model import Model, OrientationLoss
 
+def worker_init_fn(worker_id):
+	imgaug.seed(np.random.get_state()[1][0] + worker_id)
+
 # ============================== Config ==============================
 # dataset path
-dataset_path = os.path.join('dataset','20220618_qd3dt_512')
+dataset_path = os.path.join('dataset','20220616_qd3dt_1024_rx')
 output_path = os.path.join('weights')
 
 # number of bins
 bins = 2
 
 # number of epoch
-epochs = 40
+epochs = 5
 
 # batch size
 batch_size = 64
@@ -41,21 +45,23 @@ batch_size = 64
 lr = 0.001
 
 # Hyper-params
-alpha = 0.6
-w = 2.1
+alpha = 0.8
+w = 0.8
 
+angle_overlap = np.pi/4
 # =========================== End of Config ==============================
-wandb.init(project="3d_det")
+# wandb.init(project="3d_det")
 
 dataloader = KITTIDataloader(os.path.join(dataset_path,'KITTI/detection/training/'))
 dataloader.load_from_file()
 
-dataset = Dataset(dataloader,bin_num=bins)
+dataset = Dataset(dataloader,bin_num=bins,overlap=angle_overlap)
 
 
 params = {'batch_size': batch_size,
 		'shuffle': True,
-		'num_workers': 6}
+		'num_workers': 6,
+		'worker_init_fn': worker_init_fn}
 
 wandb.config = {
 		'learning_rate': lr,
@@ -86,7 +92,7 @@ for epoch in range(epochs):
 		local_batch=local_batch.float().cuda()
 		[orient, conf, dim, depth] = model(local_batch)
 
-		orient_loss = orient_loss_func(orient, truth_orient, truth_conf)
+		orient_loss = orient_loss_func(orient, truth_orient, truth_conf,model.bins)
 		dim_loss = dim_loss_func(dim, truth_dim)
 		depth_loss = depth_loss_func(depth, truth_depth)
 
@@ -101,10 +107,10 @@ for epoch in range(epochs):
 		opt_SGD.step()
 
 		if step % 60 == 0:
-			wandb.log({"loss": loss,
-				"orient_loss": loss_theta,
-				"dim_loss":dim_loss,
-				"depth_loss":depth_loss})
+			# wandb.log({"loss": loss,
+			# 	"orient_loss": loss_theta,
+			# 	"dim_loss":dim_loss,
+			# 	"depth_loss":depth_loss})
 			print('Epoch {} | {}/{}: Loss {}, Dim Loss {}, Orient Loss {}, Depth Loss {}'.format(epoch,step,total_step,loss,dim_loss,loss_theta,depth_loss))
 		    
 		step +=1

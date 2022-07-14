@@ -13,12 +13,14 @@ def compose_transform(img,mode):
 	transforms = list()
 	h,w,_ = img.shape
 
+	transforms.append(iaa.PadToFixedSize(width=512, height=512))
+
 	if h>w:
 		transforms.append(iaa.Resize({"height": 224, "width": "keep-aspect-ratio"}))
 	else:
-		transforms.append(iaa.Resize({"height": "keep-aspect-ratio", "width": 255}))
+		transforms.append(iaa.Resize({"height": "keep-aspect-ratio", "width": 224}))
 
-	transforms.append(iaa.PadToFixedSize(width=224, height=224))
+	# transforms.append(iaa.PadToFixedSize(width=224, height=224))
 
 	# if mode == 'training':
 		# transforms.append(iaa.SaltAndPepper(0.1))
@@ -118,5 +120,6 @@ def plot_error(res):
 	# naming the y axis
 	plt.ylabel('Error')
 	plt.ylim([0, 180])
+	plt.xlim([0, 360])
 
 	plt.show()

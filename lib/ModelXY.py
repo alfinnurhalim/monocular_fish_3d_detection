@@ -58,8 +58,6 @@ class Model(nn.Module):
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(256, bins),
-                    # nn.Softmax()
-                    #nn.Sigmoid()
                 )
         self.dimension = nn.Sequential(
                     nn.Linear(2048 * 1 * 1, 512),
@@ -82,19 +80,24 @@ class Model(nn.Module):
                 )
 
     def forward(self, x):
-        x = self.backbone(x) # 512 x 7 x 7
+        x = self.backbone(x)
         x = x.view(-1, 2048 * 1 * 1)
 
-        orientation = self.orientation(x)
-        orientation = orientation.view(-1, self.bins, 2)
+        # for alphax
+        orientX = self.orientation(x)
+        orientX = orientX.view(-1, self.bins, 2)
 
-        confidence = self.confidence(x)
+        orientY = self.orientation(x)
+        orientY = orientY.view(-1, self.bins, 2)
+
+        confX = self.confidence(x)
+        confY = self.confidence(x)
 
         dimension = self.dimension(x)
 
         depth = self.depth(x)
 
-        return orientation, confidence, dimension, depth
+        return orientX, confX, orientY, confY, dimension, depth
 
     def _get_backbone(self,name):
 

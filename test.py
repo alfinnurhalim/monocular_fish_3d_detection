@@ -27,20 +27,22 @@ from lib.Model import Model, OrientationLoss
 
 # ============================== Config ==============================
 # dataset path
-dataset_path = os.path.join('dataset','20220618_qd3dt_512')
-weight_path = os.path.join('weights','epoch_8.pkl')
+dataset_path = os.path.join('dataset','20220616_qd3dt_1024_rx')
+weight_path = os.path.join('weights','epoch_4.pkl')
 
 # number of bins
 bin_num = 2
 
 # batch size
 batch_size = 1 #for testing
+
+angle_overlap = np.pi/4
 # =========================== End of Config ==============================
 
 dataloader = KITTIDataloader(os.path.join(dataset_path,'KITTI/detection/training/'))
 dataloader.load_from_file()
 
-dataset = Dataset(dataloader,bin_num=bin_num)
+dataset = Dataset(dataloader,bin_num=bin_num,overlap=angle_overlap,mode='eval')
 params = {'batch_size': batch_size,
           'shuffle': False,
           'num_workers': 6}

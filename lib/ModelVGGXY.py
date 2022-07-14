@@ -42,7 +42,7 @@ class Model(nn.Module):
         self.bins = bins
         self.backbone = self._get_backbone(backbone)
         self.orientation = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 256),
+                    nn.Linear(512 * 7 * 7, 256),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(256, 256),
@@ -51,7 +51,7 @@ class Model(nn.Module):
                     nn.Linear(256, bins*2) # to get sin and cos
                 )
         self.confidence = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 256),
+                    nn.Linear(512 * 7 * 7, 256),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(256, 256),
@@ -60,7 +60,7 @@ class Model(nn.Module):
                     nn.Linear(256, bins),
                 )
         self.dimension = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 512),
+                    nn.Linear(512 * 7 * 7, 512),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(512, 512),
@@ -70,7 +70,7 @@ class Model(nn.Module):
                 )
 
         self.depth = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 512),
+                    nn.Linear(512 * 7 * 7, 512),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(512, 512),
@@ -79,27 +79,38 @@ class Model(nn.Module):
                     nn.Linear(512, 1)
                 )
 
-    def forward(self, x):
+    def forward(self, x,rx=False):
         x = self.backbone(x) # 512 x 7 x 7
-        x = x.view(-1, 2048 * 1 * 1)
+        x = x.view(-1, 512 * 7 * 7)
 
-        orientation = self.orientation(x)
-        orientation = orientation.view(-1, self.bins, 2)
+        orientX = self.orientation(x)
+        orientX = orientX.view(-1, self.bins, 2)
 
-        confidence = self.confidence(x)
+        orientY = self.orientation(x)
+        orientY = orientY.view(-1, self.bins, 2)
+
+        if rx:
+            for param in orientY.parameters():
+                param.requires_grad = False
+                
+        confX = self.confidence(x)
+        confY = self.confidence(x)
 
         dimension = self.dimension(x)
 
         depth = self.depth(x)
 
-        return orientation, confidence, dimension, depth
+        return orientX, confX, orientY, confY, dimension, depth
 
     def _get_backbone(self,name):
 
         # will support different backbone later
-        backbone = resnet50(pretrained=True)
-        modules = list(backbone.children())[:-1]
-        backbone = nn.Sequential(*modules)
+        backbone = vgg.vgg19_bn(pretrained=True)
+        backbone = backbone.features
+
+        # resnet
+        # modules = list(backbone.children())[:-1]
+        # backbone = nn.Sequential(*modules)
 
         return backbone
 

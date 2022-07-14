@@ -42,7 +42,7 @@ class Model(nn.Module):
         self.bins = bins
         self.backbone = self._get_backbone(backbone)
         self.orientation = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 256),
+                    nn.Linear(512 * 7 * 7, 256),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(256, 256),
@@ -51,7 +51,7 @@ class Model(nn.Module):
                     nn.Linear(256, bins*2) # to get sin and cos
                 )
         self.confidence = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 256),
+                    nn.Linear(512 * 7 * 7, 256),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(256, 256),
@@ -60,7 +60,7 @@ class Model(nn.Module):
                     nn.Linear(256, bins),
                 )
         self.dimension = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 512),
+                    nn.Linear(512 * 7 * 7, 512),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(512, 512),
@@ -70,7 +70,7 @@ class Model(nn.Module):
                 )
 
         self.depth = nn.Sequential(
-                    nn.Linear(2048 * 1 * 1, 512),
+                    nn.Linear(512 * 7 * 7, 512),
                     nn.ReLU(True),
                     nn.Dropout(),
                     nn.Linear(512, 512),
@@ -81,7 +81,7 @@ class Model(nn.Module):
 
     def forward(self, x):
         x = self.backbone(x) # 512 x 7 x 7
-        x = x.view(-1, 2048 * 1 * 1)
+        x = x.view(-1, 512 * 7 * 7)
 
         orientation = self.orientation(x)
         orientation = orientation.view(-1, self.bins, 2)
@@ -97,9 +97,12 @@ class Model(nn.Module):
     def _get_backbone(self,name):
 
         # will support different backbone later
-        backbone = resnet50(pretrained=True)
-        modules = list(backbone.children())[:-1]
-        backbone = nn.Sequential(*modules)
+        backbone = vgg.vgg19_bn(pretrained=True)
+        backbone = backbone.features
+
+        # resnet
+        # modules = list(backbone.children())[:-1]
+        # backbone = nn.Sequential(*modules)
 
         return backbone
 
